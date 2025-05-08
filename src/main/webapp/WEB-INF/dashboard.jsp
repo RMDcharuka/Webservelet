@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/layout/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+
+<%@include file="components/sidebar.jsp"%>
+<main class="main-content">
+    <header class="topbar">
+        <h1>Welcome to Student Management System</h1>
+    </header>
+
+    <section class="cards-container">
+        <div class="card"><i class="fas fa-user-graduate"></i><h3>Total Students</h3><p>1,200</p></div>
+        <div class="card"><i class="fas fa-book"></i><h3>Courses</h3><p>10</p></div>
+        <div class="card"><i class="fas fa-chalkboard-teacher"></i><h3>Instructors</h3><p>45</p></div>
+        <div class="card"><i class="fas fa-file-alt"></i><h3>Exams</h3><p>20</p></div>
+        <div class="card"><i class="fas fa-user-clock"></i><h3>Avg Attendance</h3><p>86%</p></div>
+    </section>
+
+    <section class="lower-cards-container">
+        <div class="subject-task">
+            <h4>Subject Task</h4>
+            <div class="bar"><span>Data Science</span><div style="width: 80%;" class="bar-fill orange">80%</div></div>
+            <div class="bar"><span>Cyber security</span><div style="width: 92%;" class="bar-fill purple">92%</div></div>
+            <div class="bar"><span>Cloud Computing</span><div style="width: 75%;" class="bar-fill blue">75%</div></div>
+            <div class="bar"><span>Softwar Engineering</span><div style="width: 60%;" class="bar-fill dark">60%</div></div>
+
+        </div>
+
+        <div class="top-students">
+            <h4>Top Students - Class 6th</h4>
+            <ul>
+                <li>👦 Lucas Jones - Allover score: 90%</li>
+                <li>👧 Emma Smith - Allover score: 89%</li>
+                <li>👦 Liam Johnson - Allover score: 88%</li>
+                <li>👧 Emma Smith - Allover score: 89%</li>
+                <li>👦 Liam Johnson - Allover score: 88%</li>
+            </ul>
+        </div>
+    </section>
+
+
+    <section class="exam-cards-row">
+        <!-- Upcoming Exams Card (Left side) -->
+        <div class="upcoming-exams">
+            <h4>Upcoming Exams</h4>
+            <div class="exam-card">
+                <p><strong>Data Science</strong> - April 25, 2025</p>
+                <p><strong>Cyber security</strong> - April 27, 2025</p>
+                <p><strong>Cloud Computing</strong> - April 30, 2025</p>
+                <p><strong>Softwar Engineering</strong> - May 3, 2025</p>
+            </div>
+        </div>
+
+        <!-- Right Side Image Cards -->
+        <div class="image-cards">
+            <div class="img-card">
+                <img src="assets/images/dashboard/boy.jpeg" alt="Exam Poster">
+                <p>Prepare for Math Exam</p>
+            </div>
+            <div class="img-card">
+                <img src="assets/images/dashboard/boy.jpeg" alt="Physics Poster">
+                <p>Physics Concepts Review</p>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
