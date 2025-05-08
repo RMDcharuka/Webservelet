@@ -1,0 +1,118 @@
+<%-- 
+    Document   : recode4
+    Created on : May 8, 2025, 11:11:06 AM
+    Author     : user
+--%>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="style2.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+
+  <nav class="sidebar">
+    <h2>Student Manager</h2>
+    <ul>
+      <li><a href="index.jsp"><i class="fas fa-home"></i> Home</a></li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="students-toggle">
+        <label for="students-toggle" class="dropdown-btn">
+          <i class="fas fa-user-graduate"></i> Students
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="#">Add New Student</a></li>
+          <li><a href="#">Student Profile</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="academic-toggle">
+        <label for="academic-toggle" class="dropdown-btn">
+          <i class="fas fa-book"></i> Academic Records
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+            <li><a href="recode1.jsp">Data Science</a></li>
+            <li><a href="recode2.jsp">Cyber security</a></li>
+            <li><a href="recods3.jsp">Cloud Computing</a></li>
+            <li><a href="recode4.jsp">Software Engineering</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="attendance-toggle">
+        <label for="attendance-toggle" class="dropdown-btn">
+          <i class="fas fa-chart-bar"></i> Attendance
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="attendenc1.jsp">Data Science</a></li>
+          <li><a href="attendenc2.jsp">AI & ML</a></li>
+          <li><a href="attendenc3.jsp">Cybersecurity</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <header class="topbar">
+      <h1>Software Engineering Students Records</h1>
+    </header>
+
+    <section class="cards-container">
+      <div class="card"><i class="fas fa-user-graduate"></i><h3>Total Students</h3><p>400</p></div>
+      <div class="card"><i class="fas fa-file-alt"></i><h3>Avg Marks</h3><p>20</p></div>
+      <div class="card"><i class="fas fa-user-clock"></i><h3>Avg Attendance</h3><p>86%</p></div>
+    </section>
+
+    <section>
+      <table border="1" cellspacing="0" cellpadding="8">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>AVG Marks</th>
+            <th>Attendance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>John Doe</td>
+            <td>Mathematics</td>
+            <td>85</td>
+            <td>92%</td>
+          </tr>
+          <tr>
+            <td>002</td>
+            <td>Jane Smith</td>
+            <td>Physics</td>
+            <td>78</td>
+            <td>88%</td>
+          </tr>
+          <tr>
+            <td>003</td>
+            <td>Ali Khan</td>
+            <td>Chemistry</td>
+            <td>90</td>
+            <td>95%</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+</body>
+</html>

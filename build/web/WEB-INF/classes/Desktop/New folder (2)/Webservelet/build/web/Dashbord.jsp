@@ -1,0 +1,130 @@
+<%-- 
+    Document   : Dashbord
+    Created on : May 8, 2025, 11:00:41 AM
+    Author     : user
+--%>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="style2.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+
+  <nav class="sidebar">
+    <h2>Student Manager</h2>
+    <ul>
+      <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="students-toggle">
+        <label for="students-toggle" class="dropdown-btn">
+          <i class="fas fa-user-graduate"></i> Students
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="#">Add New Student</a></li>
+          <li><a href="#">Student Profile</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="academic-toggle">
+        <label for="academic-toggle" class="dropdown-btn">
+          <i class="fas fa-book"></i> Academic Records
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="recode1.jsp">Data Science</a></li>
+          <li><a href="recode2.jsp">Cyber security</a></li>
+          <li><a href="recods3.jsp">Cloud Computing</a></li>
+          <li><a href="recode4.jsp">Software Engineering</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="attendance-toggle">
+        <label for="attendance-toggle" class="dropdown-btn">
+          <i class="fas fa-chart-bar"></i> Attendance
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="attendenc1.jsp">Data Science</a></li>
+          <li><a href="attendenc2.jsp">Cyber security</a></li>
+          <li><a href="attendenc3.jsp">Cloud Computing</a></li>
+          <li><a href="attendenc4.jsp">Software Engineering</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <header class="topbar">
+      <h1>Welcome to Student Management System</h1>
+    </header>
+
+    <section class="cards-container">
+      <div class="card"><i class="fas fa-user-graduate"></i><h3>Total Students</h3><p><%= 1200 %></p></div>
+      <div class="card"><i class="fas fa-book"></i><h3>Courses</h3><p><%= 10 %></p></div>
+      <div class="card"><i class="fas fa-chalkboard-teacher"></i><h3>Instructors</h3><p><%= 45 %></p></div>
+      <div class="card"><i class="fas fa-file-alt"></i><h3>Exams</h3><p><%= 20 %></p></div>
+      <div class="card"><i class="fas fa-user-clock"></i><h3>Avg Attendance</h3><p><%= "86%" %></p></div>
+    </section>
+
+    <section class="lower-cards-container">
+      <div class="subject-task">
+        <h4>Subject Task</h4>
+        <div class="bar"><span>Data Science</span><div style="width: 80%;" class="bar-fill orange">80%</div></div>
+        <div class="bar"><span>Cyber security</span><div style="width: 92%;" class="bar-fill purple">92%</div></div>
+        <div class="bar"><span>Cloud Computing</span><div style="width: 75%;" class="bar-fill blue">75%</div></div>
+        <div class="bar"><span>Software Engineering</span><div style="width: 60%;" class="bar-fill dark">60%</div></div>
+      </div>
+
+      <div class="top-students">
+        <h4>Top Students - Class 6th</h4>
+        <ul>
+          <li>👦 Lucas Jones - Allover score: 90%</li>
+          <li>👧 Emma Smith - Allover score: 89%</li>
+          <li>👦 Liam Johnson - Allover score: 88%</li>
+          <li>👧 Emma Smith - Allover score: 89%</li>
+          <li>👦 Liam Johnson - Allover score: 88%</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="exam-cards-row">
+      <!-- Upcoming Exams Card (Left side) -->
+      <div class="upcoming-exams">
+        <h4>Upcoming Exams</h4>
+        <div class="exam-card">
+          <p><strong>Data Science</strong> - April 25, 2025</p>
+          <p><strong>Cyber security</strong> - April 27, 2025</p>
+          <p><strong>Cloud Computing</strong> - April 30, 2025</p>
+          <p><strong>Software Engineering</strong> - May 3, 2025</p>
+        </div>
+      </div>
+
+      <!-- Right Side Image Cards -->
+      <div class="image-cards">
+        <div class="img-card">
+          <img src="boy.jpeg" alt="Exam Poster">
+          <p>Prepare for Math Exam</p>
+        </div>
+        <div class="img-card">
+          <img src="boy.jpeg" alt="Physics Poster">
+          <p>Physics Concepts Review</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

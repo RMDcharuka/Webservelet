@@ -1,14 +1,17 @@
+<%-- 
+    Document   : index
+    Created on : May 8, 2025, 10:55:18 AM
+    Author     : user
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Management Portal</title>
-  <style>
-    body {
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+        <style>
+            body {
       margin: 0;
       font-family: "Segoe UI",Tahoma, Geneva, Verdana, sans-serif;
       background-color: #eef2f7;
@@ -122,11 +125,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
       text-align: center;
       padding: 20px 10px;
     }
-  </style>
-</head>
-<body>
-
-  <div class="header">
+        </style>
+    </head>
+    <body>
+         <div class="header">
     <h1>Student Management Portal</h1>
     <p>"An all-in-one platform to manage student records, attendance, exams, and more."</p>
     <div class="buttons">
@@ -178,5 +180,5 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
     <p>&copy; 2025 Student Management System. All rights reserved.</p>
   </div>
 
-</body>
+    </body>
 </html>

@@ -1,0 +1,134 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+</head>
+<body>
+
+  <nav class="sidebar">
+    <h2>Student Manager</h2>
+    <ul>
+      <li><a href="index.jsp"><i class="fas fa-home"></i> Home</a></li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="students-toggle">
+        <label for="students-toggle" class="dropdown-btn">
+          <i class="fas fa-user-graduate"></i> Students
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="student.jsp">Add New Student</a></li>
+          <li><a href="studentprofile.jsp">Student Profile</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="academic-toggle">
+        <label for="academic-toggle" class="dropdown-btn">
+          <i class="fas fa-book"></i> Academic Records
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="recode1.jsp">Data Science</a></li>
+          <li><a href="recode2.jsp">Cyber Security</a></li>
+          <li><a href="recode3.jsp">Cloud Computing</a></li>
+          <li><a href="recode4.jsp">Software Engineering</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <input type="checkbox" id="attendance-toggle">
+        <label for="attendance-toggle" class="dropdown-btn">
+          <i class="fas fa-chart-bar"></i> Attendance
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </label>
+        <ul class="dropdown-content">
+          <li><a href="attendenc1.jsp">Data Science</a></li>
+          <li><a href="attendenc2.jsp">Cyber Security</a></li>
+          <li><a href="attendenc3.jsp">Cloud Computing</a></li>
+          <li><a href="attendenc4.jsp">Software Engineering</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <section class="welcome">
+      <h1>Welcome to the Cloud Computing Attendance</h1>
+    </section>
+
+    <section class="hearde text">
+      <div class="card">
+        <div class="card-text">
+          <h2>Hello!</h2>
+          <p>Perfect day to chase dreams, believe in yourself, take bold steps, and make your hopes a reality. ✨ </p>
+        </div>
+        <div class="card-image">
+          <img src="images/da3.webp" alt="Illustration">
+        </div>
+      </div>
+    </section>
+
+    <section class="cards-container">
+      <div class="small-card">
+        <i class="fas fa-user-graduate"></i>
+        <h3>Total Students</h3>
+        <p>400</p>
+      </div>
+      <div class="small-card">
+        <i class="fas fa-user-clock"></i>
+        <h3>Avg Attendance</h3>
+        <p>76%</p>
+      </div>
+    </section>
+
+    <section>
+      <table border="1" cellspacing="0" cellpadding="8">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Total Days</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Attendance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>John Doe</td>
+            <td>60</td>
+            <td>55</td>
+            <td>5</td>
+            <td>85%</td>
+          </tr>
+          <tr>
+            <td>002</td>
+            <td>Jane Smith</td>
+            <td>60</td>
+            <td>55</td>
+            <td>5</td>
+            <td>85%</td>
+          </tr>
+          <tr>
+            <td>003</td>
+            <td>Ali Khan</td>
+            <td>60</td>
+            <td>55</td>
+            <td>5</td>
+            <td>85%</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
