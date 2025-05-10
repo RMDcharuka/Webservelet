@@ -1,3 +1,6 @@
-/home/animidox/Downloads/ProjectSM/student_managment_system/src/main/java/org/nsbm/dea/student_management_system/lib/Faculty.java
-/home/animidox/Downloads/ProjectSM/student_managment_system/src/main/java/org/nsbm/dea/student_management_system/pages/Record.java
-/home/animidox/Downloads/ProjectSM/student_managment_system/src/main/java/org/nsbm/dea/student_management_system/pages/Attendance.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/config/Env.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/lib/Faculty.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/pages/Attendance.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/pages/Record.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/state/DB.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/state/Redis.java
