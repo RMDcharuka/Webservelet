@@ -1,6 +1,11 @@
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/config/Env.java
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/lib/Faculty.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/model/user/UserDetails.java
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/pages/Attendance.java
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/pages/Record.java
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/state/DB.java
 /Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/state/Redis.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/token/Claims.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/token/ExtendedClaims.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/token/PrimaryClaims.java
+/Users/vinuka/projects/university/Webservelet/src/main/java/org/nsbm/dea/student_management_system/token/Token.java
