@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.nsbm.dea.student_management_system.model.http.Response;
+import org.nsbm.dea.student_management_system.token.TokenError;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
@@ -75,6 +76,22 @@ public class AppError extends Exception {
     }
 
     return internal("internal server error", exception);
+  }
+
+  public static AppError fromTokenError(TokenError exception) {
+    if (exception == null) {
+      return null;
+    }
+
+    switch (exception.getKind()) {
+      case MISSING_CLAIMS:
+      case INVALID_FORMAT:
+      case PARSING_FAILED:
+      case VALIDATION_FAILED:
+        return badRequest(exception.getMessage(), exception);
+      default:
+        return internal("Something went wrong", exception);
+    }
   }
 
   public static AppError fromValidationError(ConstraintViolationException exception) {
