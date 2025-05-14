@@ -1,6 +1,7 @@
 package org.nsbm.dea.student_management_system.error;
 
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +11,7 @@ import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 public class AppError extends Exception {
@@ -94,12 +96,13 @@ public class AppError extends Exception {
     }
   }
 
-  public static AppError fromValidationError(ConstraintViolationException exception) {
-    if (exception == null) {
+  public static <T> AppError fromValidationError(Set<ConstraintViolation<T>> violations) {
+    if (violations == null || violations.isEmpty()) {
       return null;
     }
 
-    return badRequest(exception.getMessage(), exception);
+    String violation = violations.iterator().next().getMessage();
+    return badRequest(violation, null);
   }
 
   public static AppError fromGenericError(Exception exception) {
