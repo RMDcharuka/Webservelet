@@ -17,10 +17,10 @@ public class UserDetails {
   @Size(min = 5, message = "PhotoURL must be a valid URL")
   private String photoURL;
 
-  UserDetails() {
+  public UserDetails() {
   }
 
-  UserDetails(int id, String email, String name, String photoURL) {
+  public UserDetails(int id, String email, String name, String photoURL) {
     this.id = id;
     this.email = email;
     this.name = name;
