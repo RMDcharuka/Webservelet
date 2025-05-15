@@ -10,7 +10,7 @@ public class UserDAO {
   public void create(String email, String name, String password) throws SQLException {
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
-          .prepareStatement("INSERT INTO user (email, name, passsword, photo_url) VALUES (?, ?, ?, ?)")) {
+          .prepareStatement("INSERT INTO _user (email, name, password, photo_url) VALUES (?, ?, ?, ?)")) {
         statement.setString(1, email);
         statement.setString(2, name);
         statement.setString(3, password);

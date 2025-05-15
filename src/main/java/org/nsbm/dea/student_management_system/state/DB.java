@@ -19,7 +19,13 @@ public class DB {
   }
 
   public static Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(Env.getDBURL());
+    return DriverManager.getConnection(
+        String.format("jdbc:postgresql://%s:%s/%s?sslmode=require",
+            Env.getDbHost(),
+            Env.getDbPort(),
+            Env.getDbName()),
+        Env.getDbUser(),
+        Env.getDbPassword());
   }
 
   public static void closeConnection(Connection connection) {

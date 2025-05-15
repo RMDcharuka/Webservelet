@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - src/main/resources/.env
     ports:
       - "8080:8080"
     volumes:
@@ -12,3 +14,10 @@ services:
       watch:
         - action: rebuild
           path: .
+          ignore:
+            - .git
+            - .idea
+            - .vscode
+            - .DS_Store
+            - logs
+            - target

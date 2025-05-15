@@ -3,10 +3,27 @@ package org.nsbm.dea.student_management_system.config;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Env {
-  private static final Dotenv dotenv = Dotenv.load();
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMalformed().ignoreIfMissing().systemProperties()
+      .load();
 
-  public static String getDBURL() {
-    return dotenv.get("DB_URL");
+  public static String getDbHost() {
+    return dotenv.get("DB_HOST");
+  }
+
+  public static String getDbPort() {
+    return dotenv.get("DB_PORT");
+  }
+
+  public static String getDbName() {
+    return dotenv.get("DB_NAME");
+  }
+
+  public static String getDbUser() {
+    return dotenv.get("DB_USER");
+  }
+
+  public static String getDbPassword() {
+    return dotenv.get("DB_PASSWORD");
   }
 
   public static String getRedisURL() {

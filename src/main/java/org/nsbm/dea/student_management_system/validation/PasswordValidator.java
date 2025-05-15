@@ -25,8 +25,8 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
       addConstraintViolation(context, "Password must be at least 8 characters long");
       return false;
     }
-    if (password.length() > 200) {
-      addConstraintViolation(context, "Password must be at most 200 characters long");
+    if (password.length() > 255) {
+      addConstraintViolation(context, "Password must be at most 255 characters long");
       return false;
     }
     if (password.matches("^[a-zA-Z0-9]*$")) {

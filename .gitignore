@@ -67,6 +67,7 @@ Desktop.ini
 logs
 
 # env files
-.env
+src/main/resources/.env
+target
 target
 target
