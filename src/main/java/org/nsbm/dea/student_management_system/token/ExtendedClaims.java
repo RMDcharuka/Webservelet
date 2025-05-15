@@ -85,7 +85,7 @@ public class ExtendedClaims implements Claims {
   }
 
   @Override
-  public Claims getClaims(DecodedJWT jwt) throws TokenError {
+  public ExtendedClaims getClaims(DecodedJWT jwt) throws TokenError {
     try {
       int sub = jwt.getClaim("sub").asInt();
       String jti = jwt.getClaim("jti").asString();

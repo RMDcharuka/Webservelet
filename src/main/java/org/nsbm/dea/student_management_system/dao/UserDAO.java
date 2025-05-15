@@ -45,4 +45,21 @@ public class UserDAO {
       }
     }
   }
+
+  public static Optional<User> getByID(int id) throws SQLException {
+    String query = "SELECT * FROM _user WHERE id = ? LIMIT 1";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setInt(1, id);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            return Optional.of(UserDAO.getUserFromResultSet(resultSet));
+          } else {
+            return Optional.empty();
+          }
+        }
+      }
+    }
+  }
 }
