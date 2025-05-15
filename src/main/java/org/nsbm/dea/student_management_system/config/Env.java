@@ -53,4 +53,12 @@ public class Env {
   public static long getSessionTokenExpiration() {
     return Long.parseLong(dotenv.get("SESSION_EXPIRES_IN"));
   }
+
+  public static String getEnv() {
+    return dotenv.get("ENV");
+  }
+
+  public static String getDomain() {
+    return dotenv.get("DOMAIN");
+  }
 }

@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana,  sans-serif, serif;;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, serif;
         }
 
         body {
@@ -18,7 +18,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-
             background-size: cover;
             background-position: center;
         }
@@ -56,7 +55,6 @@
             font-weight: bold;
             color: black;
             margin: 25px 0;
-
         }
 
         .login-form {
@@ -90,6 +88,13 @@
             outline: none;
             border-color: #022a44;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
         }
 
         .form-options {
@@ -128,7 +133,6 @@
             cursor: pointer;
             transition: background-color 0.3s;
             margin-top: 10px;
-
         }
 
         .login-button:hover {
@@ -152,38 +156,131 @@
             text-decoration: underline;
         }
 
-
+        .api-error {
+            color: #d32f2f;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
-<div class="login-container">
-    <div class="header">
-        <h1 class="title">Welcome Back!</h1>
+    <div class="login-container">
+        <div class="header">
+            <h1 class="title">Welcome Back!</h1>
+        </div>
 
+        <h2 class="login-title">Login</h2>
 
+        <form class="login-form" id="loginForm" onsubmit="return false;">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input name="email" type="email" id="email" placeholder="Enter your email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input name="password" type="password" id="password" placeholder="Enter your password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-button" onclick="handleSubmit()">Login</button>
+            <p class="api-error" id="apiError"></p>
+        </form>
+
+        <div class="signup-section">
+            Don't have an account? <a href="signup.html" class="signup-link">Sign up now</a>
+        </div>
     </div>
 
-    <h2 class="login-title">Login</h2>
+    <script>
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return "Please enter a valid email address.";
+            }
+            return "";
+        }
 
-    <form class="login-form" action="LoginValidationServlet" method="post">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input name="email" type="text" id="email" placeholder="Enter your email" required>
-        </div>
+        function validatePassword(password) {
+            if (password.length < 8 || password.length > 255) {
+                return "Password must be between 8 and 255 characters.";
+            }
+            if (!/[A-Z]/.test(password)) {
+                return "Password must contain at least one uppercase letter.";
+            }
+            if (!/\d/.test(password)) {
+                return "Password must contain at least one number.";
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                return "Password must contain at least one special character.";
+            }
+            return "";
+        }
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input name="password" type="password" id="password" placeholder="Enter your password" required>
-        </div>
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = message ? 'block' : 'none';
+        }
 
-        <div class="form-options">
-            <div class="remember-me">
-                <input type="checkbox" id="remember">
-                <label for="remember">Remember me</label>
-            </div>
-            <a href="#" class="forgot-password">Forgot password?</a>
-        </div>
+        async function handleSubmit() {
+            const form = document.getElementById('loginForm');
+            const email = form.email.value.trim();
+            const password = form.password.value;
 
-        <button type="submit" class="login-button">Login</button>
-    </form>
-</div>
+            // Reset previous errors
+            showError('emailError', '');
+            showError('passwordError', '');
+            showError('apiError', '');
+
+            // Validate inputs
+            const emailError = validateEmail(email);
+            const passwordError = validatePassword(password);
+
+            if (emailError) showError('emailError', emailError);
+            if (passwordError) showError('passwordError', passwordError);
+
+            if (emailError || passwordError) {
+                return;
+            }
+
+            // Prepare data for API
+            const data = {
+                email: email,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.status === 200) {
+                    form.reset();
+                    window.location.href = "/dashboard";
+                } else {
+                    const result = await response.json();
+                    showError('apiError', result.message || 'Login failed. Please try again.');
+                }
+            } catch (error) {
+                showError('apiError', 'An error occurred. Please try again later.');
+            }
+        }
+    </script>
+</body>
+</html>

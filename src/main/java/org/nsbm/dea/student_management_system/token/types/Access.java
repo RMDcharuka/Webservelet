@@ -26,7 +26,7 @@ public class Access extends Token<PrimaryClaims> {
 
   @Override
   public long getExp() {
-    return Long.parseLong(Env.getAccessTokenSecret());
+    return Env.getAccessTokenExpiration();
   }
 
   public Access() {

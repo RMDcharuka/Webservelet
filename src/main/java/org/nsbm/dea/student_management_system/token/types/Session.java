@@ -29,7 +29,7 @@ public class Session extends Token<ExtendedClaims> {
 
   @Override
   public long getExp() {
-    return Long.parseLong(Env.getSessionTokenSecret());
+    return Env.getSessionTokenExpiration();
   }
 
   @Override

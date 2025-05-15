@@ -25,7 +25,7 @@ public class Refresh extends Token<PrimaryClaims> {
 
   @Override
   public long getExp() {
-    return Long.parseLong(Env.getAccessTokenSecret());
+    return Env.getRefreshTokenExpiration();
   }
 
   public Refresh() {

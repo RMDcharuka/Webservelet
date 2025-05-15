@@ -12,7 +12,6 @@ import org.postgresql.util.PSQLState;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 
 public class AppError extends Exception {
   private static final Logger logger = Logger.getLogger(AppError.class.getName());
