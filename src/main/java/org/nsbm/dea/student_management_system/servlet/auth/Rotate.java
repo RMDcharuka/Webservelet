@@ -2,8 +2,6 @@ package org.nsbm.dea.student_management_system.servlet.auth;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.nsbm.dea.student_management_system.error.AppError;
 import org.nsbm.dea.student_management_system.model.http.Response;
@@ -27,6 +25,10 @@ public class Rotate extends HttpServlet {
     try {
       Optional<String> refreshToken = Optional.empty();
       Cookie[] cookies = request.getCookies();
+      if (cookies == null || cookies.length == 0) {
+        AppError.response(response, AppError.unauthorized("Refresh token is missing", null));
+        return;
+      }
       for (Cookie cookie : cookies) {
         if (cookie.getName().equals("dea_refresh")) {
           refreshToken = Optional.of(cookie.getValue());

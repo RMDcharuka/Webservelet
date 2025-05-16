@@ -6,11 +6,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.nsbm.dea.student_management_system.dao.UserDAO;
+import org.nsbm.dea.student_management_system.error.AppError;
 import org.nsbm.dea.student_management_system.model.user.UserDetails;
 import org.nsbm.dea.student_management_system.token.ExtendedClaims;
 import org.nsbm.dea.student_management_system.token.PrimaryClaims;
 import org.nsbm.dea.student_management_system.token.TokenError;
-import org.nsbm.dea.student_management_system.token.types.Refresh;
+import org.nsbm.dea.student_management_system.token.TokenType;
+import org.nsbm.dea.student_management_system.token.types.Access;
 import org.nsbm.dea.student_management_system.token.types.Session;
 
 import jakarta.servlet.Filter;
@@ -23,7 +25,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebFilter(urlPatterns = { "/dashboard/*" })
+@WebFilter(urlPatterns = { "/api/subject/*" })
 public class Auth implements Filter {
   private static final Logger logger = Logger.getLogger(Auth.class.getName());
 
@@ -33,60 +35,44 @@ public class Auth implements Filter {
     HttpServletRequest req = (HttpServletRequest) request;
     HttpServletResponse res = (HttpServletResponse) response;
 
-    Optional<String> refreshToken = Optional.empty();
-    Optional<String> sessionToken = Optional.empty();
-
-    Cookie[] cookies = req.getCookies();
-    if (cookies == null || cookies.length == 0) {
-      res.sendRedirect(req.getContextPath() + "/login");
+    String authorization = req.getHeader("Authorization");
+    if (authorization == null || !authorization.startsWith("Bearer ")) {
+      AppError.response(res, AppError.unauthorized("You are not authorized to perform this operation", null));
       return;
     }
-    for (Cookie cookie : cookies) {
-      if (cookie.getName().equals("dea_refresh")) {
-        refreshToken = Optional.of(cookie.getValue());
-      }
-      if (cookie.getName().equals("dea_session")) {
-        sessionToken = Optional.of(cookie.getValue());
-      }
-    }
+    String token = authorization.substring(7);
 
-    if (refreshToken.isEmpty()) {
-      res.sendRedirect(req.getContextPath() + "/login");
-      return;
-    }
-
-    Refresh refresh = new Refresh();
-    Session session = new Session();
+    Access access = new Access();
     PrimaryClaims primaryClaims = new PrimaryClaims();
-    ExtendedClaims extendedClaims = new ExtendedClaims();
+
     UserDetails userDetails = new UserDetails();
 
     try {
-      var decodedRefreshToken = refresh.decode(refreshToken.get());
-      var refreshTokenClaims = primaryClaims.getClaims(decodedRefreshToken);
+      access.verify(token, TokenType.ACCESS);
 
-      if (sessionToken.isEmpty()) {
-        var user = UserDAO.getByID(refreshTokenClaims.getSub());
-        if (user.isEmpty()) {
-          res.sendRedirect(req.getContextPath() + "/login");
-          return;
-        }
-        userDetails = user.get().toUserDetails();
-      } else {
-        var decodedSessionToken = session.decode(sessionToken.get());
-        ExtendedClaims sessionTokenClaims = extendedClaims.getClaims(decodedSessionToken);
-        userDetails = sessionTokenClaims.getUserDetails();
-      }
-    } catch (TokenError e) {
-      if (e.getKind() == TokenError.ErrorKind.VALIDATION_FAILED) {
-        res.sendRedirect(req.getContextPath() + "/login");
+      Cookie[] cookies = req.getCookies();
+      if (cookies == null || cookies.length == 0) {
+        AppError.response(res, AppError.unauthorized("You are not authorized to perform this operation", null));
         return;
       }
-      logger.log(Level.SEVERE, e.getMessage());
-      throw new ServletException("Error while checking authentication");
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
-      throw new ServletException("Something went wrong");
+      Optional<String> sessionToken = Optional.empty();
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals("dea_session")) {
+          sessionToken = Optional.of(cookie.getValue());
+          break;
+        }
+      }
+      if (sessionToken.isEmpty()) {
+        AppError.response(res, AppError.unauthorized("You are not authorized to perform this operation", null));
+        return;
+      }
+
+      var decodedSessionToken = new Session().decode(sessionToken.get());
+      var sessionTokenClaims = new ExtendedClaims().getClaims(decodedSessionToken);
+      userDetails = sessionTokenClaims.getUserDetails();
+    } catch (TokenError e) {
+      AppError.response(res, AppError.fromTokenError(e));
+      return;
     }
 
     req.setAttribute("userDetails", userDetails);
