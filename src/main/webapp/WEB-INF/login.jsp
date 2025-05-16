@@ -133,10 +133,19 @@
             cursor: pointer;
             transition: background-color 0.3s;
             margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
         .login-button:hover {
             background-color: #123a6d;
+        }
+
+        .login-button:disabled {
+            background-color: #6b8db3;
+            cursor: not-allowed;
         }
 
         .signup-section {
@@ -162,6 +171,22 @@
             text-align: center;
             margin-top: 15px;
             display: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -194,7 +219,10 @@
                 <a href="#" class="forgot-password">Forgot password?</a>
             </div>
 
-            <button type="submit" class="login-button" onclick="handleSubmit()">Login</button>
+            <button type="submit" class="login-button" id="loginButton" onclick="handleSubmit()">
+                <span class="button-text">Login</span>
+                <span class="spinner" id="spinner"></span>
+            </button>
             <p class="api-error" id="apiError"></p>
         </form>
 
@@ -234,6 +262,16 @@
             errorElement.style.display = message ? 'block' : 'none';
         }
 
+        function setLoadingState(isLoading) {
+            const button = document.getElementById('loginButton');
+            const spinner = document.getElementById('spinner');
+            const buttonText = document.querySelector('.button-text');
+
+            button.disabled = isLoading;
+            spinner.style.display = isLoading ? 'inline-block' : 'none';
+            buttonText.textContent = isLoading ? 'Logging in...' : 'Login';
+        }
+
         async function handleSubmit() {
             const form = document.getElementById('loginForm');
             const email = form.email.value.trim();
@@ -261,6 +299,8 @@
                 password: password
             };
 
+            setLoadingState(true);
+
             try {
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
@@ -279,6 +319,8 @@
                 }
             } catch (error) {
                 showError('apiError', 'An error occurred. Please try again later.');
+            } finally {
+                setLoadingState(false);
             }
         }
     </script>

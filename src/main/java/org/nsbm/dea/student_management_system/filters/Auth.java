@@ -37,6 +37,10 @@ public class Auth implements Filter {
     Optional<String> sessionToken = Optional.empty();
 
     Cookie[] cookies = req.getCookies();
+    if (cookies == null || cookies.length == 0) {
+      res.sendRedirect(req.getContextPath() + "/login");
+      return;
+    }
     for (Cookie cookie : cookies) {
       if (cookie.getName().equals("dea_refresh")) {
         refreshToken = Optional.of(cookie.getValue());
