@@ -29,7 +29,7 @@ public abstract class Token<T extends Claims> {
     try {
       Algorithm algorithm = Algorithm.HMAC256(this.getSecretKey());
       JWTVerifier verifier = JWT.require(algorithm)
-          .withIssuer("nsbm")
+          .withIssuer("org.nsbm.dea")
           .withClaimPresence("sub")
           .withClaimPresence("jti")
           .withClaimPresence("rjti")

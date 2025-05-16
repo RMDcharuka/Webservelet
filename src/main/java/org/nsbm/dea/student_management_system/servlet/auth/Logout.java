@@ -74,5 +74,7 @@ public class Logout extends HttpServlet {
     sessionCookie.setSecure(!Environment.isDev());
     sessionCookie.setDomain(Env.getDomain());
 
+    response.addCookie(refreshCookie);
+    response.addCookie(sessionCookie);
   }
 }

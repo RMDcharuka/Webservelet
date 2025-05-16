@@ -12,17 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.jaspeen.ulid.ULID;
 
-/**
- * PrimaryClaims
- */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrimaryClaims implements Claims {
   private int sub;
   private String jti;
   private String rjti;
-  private Date exp;
-  private Date iat;
-  private Date nbf;
+  private long exp;
+  private long iat;
+  private long nbf;
   private Optional<String> custom;
 
   public PrimaryClaims() {
@@ -35,9 +32,9 @@ public class PrimaryClaims implements Claims {
     this.sub = sub;
     this.jti = jti.orElse(ULID.random().toString());
     this.rjti = rjti.orElse(this.jti);
-    this.iat = Date.from(now);
-    this.nbf = Date.from(now.plusSeconds(5));
-    this.exp = Date.from(now.plusSeconds(exp));
+    this.iat = Date.from(now).getTime() / 1000;
+    this.nbf = Date.from(now.plusSeconds(5)).getTime() / 1000;
+    this.exp = Date.from(now.plusSeconds(exp)).getTime() / 1000;
     this.custom = custom;
   }
 
@@ -45,9 +42,9 @@ public class PrimaryClaims implements Claims {
     this.sub = sub;
     this.jti = jti;
     this.rjti = rjti;
-    this.iat = iat;
-    this.nbf = nbf;
-    this.exp = exp;
+    this.iat = iat.getTime() / 1000;
+    this.nbf = nbf.getTime() / 1000;
+    this.exp = exp.getTime() / 1000;
     if (custom == null || custom == "") {
       this.custom = Optional.empty();
     } else {
@@ -76,17 +73,17 @@ public class PrimaryClaims implements Claims {
   }
 
   @Override
-  public Date getExp() {
+  public long getExp() {
     return exp;
   }
 
   @Override
-  public Date getIat() {
+  public long getIat() {
     return iat;
   }
 
   @Override
-  public Date getNbf() {
+  public long getNbf() {
     return nbf;
   }
 
@@ -101,8 +98,8 @@ public class PrimaryClaims implements Claims {
       this.sub = jwt.getClaim("sub").asInt();
       this.jti = jwt.getClaim("jti").asString();
       this.rjti = jwt.getClaim("rjti").asString();
-      this.iat = jwt.getClaim("iat").asDate();
-      this.exp = jwt.getClaim("exp").asDate();
+      this.iat = jwt.getClaim("iat").asLong();
+      this.exp = jwt.getClaim("exp").asLong();
 
       String custom = jwt.getClaim("custom").asString();
       if (custom == null || custom == "") {

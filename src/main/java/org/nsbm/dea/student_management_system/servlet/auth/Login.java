@@ -123,8 +123,8 @@ public class Login extends HttpServlet {
       String ipAddress = ip;
       executor.submit(() -> {
         try {
-          SessionDAO.create(refreshClaims.getJti(), user.getId(), ipAddress, refreshClaims.getIat().getTime(),
-              refreshClaims.getExp().getTime());
+          SessionDAO.create(refreshClaims.getJti(), user.getId(), ipAddress, refreshClaims.getIat(),
+              refreshClaims.getExp());
         } catch (Exception e) {
           logger.log(Level.SEVERE, "Failed to record the session in the database", e);
         }

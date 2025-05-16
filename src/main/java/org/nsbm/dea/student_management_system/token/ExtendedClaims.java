@@ -55,17 +55,17 @@ public class ExtendedClaims implements Claims {
   }
 
   @Override
-  public Date getIat() {
+  public long getIat() {
     return primaryClaims.getIat();
   }
 
   @Override
-  public Date getExp() {
+  public long getExp() {
     return primaryClaims.getExp();
   }
 
   @Override
-  public Date getNbf() {
+  public long getNbf() {
     return primaryClaims.getNbf();
   }
 
