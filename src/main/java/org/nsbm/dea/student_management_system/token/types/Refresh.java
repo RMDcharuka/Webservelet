@@ -1,8 +1,10 @@
 package org.nsbm.dea.student_management_system.token.types;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 import org.nsbm.dea.student_management_system.config.Env;
+import org.nsbm.dea.student_management_system.dao.SessionDAO;
 import org.nsbm.dea.student_management_system.state.Redis;
 import org.nsbm.dea.student_management_system.token.PrimaryClaims;
 import org.nsbm.dea.student_management_system.token.Token;
@@ -67,12 +69,12 @@ public class Refresh extends Token<PrimaryClaims> {
   }
 
   public void delete(String rjti) throws TokenError {
-    // TODO: Add the ability to delete the refresh token session from the database
-
     var pool = Redis.getPool();
     var jedis = pool.getResource();
 
     try {
+      SessionDAO.delete(rjti);
+
       String value = jedis.get(TokenType.REFRESH.getKey(rjti));
       if (value == null || value == "") {
         throw new TokenError(TokenError.ErrorKind.VALIDATION_FAILED, "refresh token is not found", null);
@@ -86,6 +88,8 @@ public class Refresh extends Token<PrimaryClaims> {
       }
     } catch (JedisException e) {
       throw new TokenError(TokenError.ErrorKind.OTHER, "failed to establish redis connection", e);
+    } catch (SQLException e) {
+      throw new TokenError(TokenError.ErrorKind.OTHER, "failed to delete session from database", e);
     } finally {
       pool.returnResource(jedis);
       pool.close();

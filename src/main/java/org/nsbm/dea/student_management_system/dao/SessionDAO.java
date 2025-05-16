@@ -21,4 +21,15 @@ public class SessionDAO {
       }
     }
   }
+
+  public static void delete(String id) throws SQLException {
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection
+          .prepareStatement("DELETE FROM _session WHERE id = ?")) {
+        statement.setString(1, id);
+
+        statement.executeUpdate();
+      }
+    }
+  }
 }

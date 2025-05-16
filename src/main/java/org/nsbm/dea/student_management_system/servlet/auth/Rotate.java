@@ -22,8 +22,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/api/auth/rotate")
 public class Rotate extends HttpServlet {
-  private static final ExecutorService executor = Executors.newFixedThreadPool(5);
-
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
@@ -56,11 +54,5 @@ public class Rotate extends HttpServlet {
       AppError.response(response, AppError.fromGenericError(e));
       return;
     }
-  }
-
-  @Override
-  public void destroy() {
-    executor.shutdown();
-    super.destroy();
   }
 }
