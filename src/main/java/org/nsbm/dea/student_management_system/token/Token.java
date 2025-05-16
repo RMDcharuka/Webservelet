@@ -1,7 +1,7 @@
 package org.nsbm.dea.student_management_system.token;
 
-import org.nsbm.dea.student_management_system.token.TokenError.ErrorKind;
 import org.nsbm.dea.student_management_system.state.Redis;
+import org.nsbm.dea.student_management_system.token.TokenError.ErrorKind;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -52,7 +52,7 @@ public abstract class Token<T extends Claims> {
   }
 
   String sub(DecodedJWT decodedJWT) {
-    return decodedJWT.getClaim("sub").asString();
+    return decodedJWT.getSubject();
   }
 
   public abstract TokenResponse<T> create(TokenParams params) throws TokenError;
@@ -63,11 +63,7 @@ public abstract class Token<T extends Claims> {
     var jedis = pool.getResource();
 
     String jti = this.jti(decodedJWT);
-    String rjti = this.rjti(decodedJWT);
     String sub = this.sub(decodedJWT);
-    if (jti == null || jti == "" || rjti == null || rjti == "" || sub == null || sub == "") {
-      throw new TokenError(ErrorKind.VALIDATION_FAILED, "token is not valid", null);
-    }
 
     try {
       String value = jedis.get(type.getKey(jti));
@@ -80,11 +76,12 @@ public abstract class Token<T extends Claims> {
           if (!value.equals(sub)) {
             throw new TokenError(ErrorKind.VALIDATION_FAILED, "token is not valid", null);
           }
+          break;
         case REFRESH:
           if (value.isEmpty()) {
             throw new TokenError(ErrorKind.VALIDATION_FAILED, "token is not valid", null);
           }
-
+          break;
         case SESSION:
           throw new UnsupportedOperationException("session token can be veirfied with self.decode method");
       }
