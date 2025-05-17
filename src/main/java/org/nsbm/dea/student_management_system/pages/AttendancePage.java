@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.nsbm.dea.student_management_system.dao.SubjectDAO;
 import org.nsbm.dea.student_management_system.model.subject.Attendance;
+import org.nsbm.dea.student_management_system.model.subject.SubjectDetails;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,15 +26,16 @@ public class AttendancePage extends HttpServlet {
     }
 
     try {
-      Optional<String> subjectName = SubjectDAO.getSubjectBySlug(subjectSlug);
-      if (subjectName.isEmpty()) {
+      Optional<SubjectDetails> subject = SubjectDAO.getSubjectBySlug(subjectSlug);
+      if (subject.isEmpty()) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND, "Subject not found");
         return;
       }
 
       List<Attendance> attendanceList = SubjectDAO.getAttendanceForSubject(subjectSlug);
+
       request.setAttribute("attendanceList", attendanceList);
-      request.setAttribute("subject", subjectName.get());
+      request.setAttribute("subject", subject.get());
       request.getRequestDispatcher("/WEB-INF/attendance.jsp").forward(request, response);
     } catch (Exception e) {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong");

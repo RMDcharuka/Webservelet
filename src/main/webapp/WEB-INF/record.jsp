@@ -1,4 +1,18 @@
-<jsp:useBean id="faculty" scope="request" type="java.lang.String"/>
+<%@ page import="org.nsbm.dea.student_management_system.model.subject.Marks" %>
+<%@ page import="org.nsbm.dea.student_management_system.dao.StudentDAO" %>
+<jsp:useBean id="marksList" scope="request" type="java.util.List<org.nsbm.dea.student_management_system.model.subject.Marks>"/>
+<jsp:useBean id="subject" scope="request" type="org.nsbm.dea.student_management_system.model.subject.SubjectDetails"/>
+<jsp:useBean id="totalStudents" scope="request" type="java.lang.Integer" />
+<jsp:useBean id="avgAttendance" scope="request" type="java.lang.Float" />
+<%
+   float totalMarks = 0;
+   int n = 0;
+   for (Marks marks : marksList) {
+      totalMarks += marks.getExaminationMarks();
+      n += 1;
+   }
+   request.setAttribute("averageMarks", n > 0 ? totalMarks/n : 0);
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,23 +27,23 @@
       <%@include file="components/sidebar.jsp"%>
       <main class="main-content">
          <header class="topbar">
-            <h1>${faculty} Students Records</h1>
+            <h1>${subject.name} Students Records</h1>
          </header>
          <section class="cards-container">
             <div class="card">
                <i class="fas fa-user-graduate"></i>
                <h3>Total Students</h3>
-               <p>400</p>
+               <p>${totalStudents}</p>
             </div>
             <div class="card">
                <i class="fas fa-file-alt"></i>
                <h3>Avg Marks</h3>
-               <p>20</p>
+               <p>${averageMarks}</p>
             </div>
             <div class="card">
                <i class="fas fa-user-clock"></i>
                <h3>Avg Attendance</h3>
-               <p>86%</p>
+               <p>${avgAttendance}%</p>
             </div>
          </section>
          <section>
@@ -38,33 +52,19 @@
                   <tr>
                      <th>ID</th>
                      <th>Name</th>
-                     <th>Course</th>
-                     <th>AVG Marks</th>
-                     <th>Attendance</th>
+                     <th>Examination name</th>
+                     <th>Marks</th>
                   </tr>
                </thead>
                <tbody>
+               <c:forEach var="marks" items="${marksList}">
                   <tr>
-                     <td>001</td>
-                     <td>John Doe</td>
-                     <td>Mathematics</td>
-                     <td>85</td>
-                     <td>92%</td>
+                     <td>${marks.studentId}</td>
+                     <td>${marks.studentName}</td>
+                     <td>${marks.examinationName}</td>
+                     <td>${marks.examinationMarks}</td>
                   </tr>
-                  <tr>
-                     <td>002</td>
-                     <td>Jane Smith</td>
-                     <td>Physics</td>
-                     <td>78</td>
-                     <td>88%</td>
-                  </tr>
-                  <tr>
-                     <td>003</td>
-                     <td>Ali Khan</td>
-                     <td>Chemistry</td>
-                     <td>90</td>
-                     <td>95%</td>
-                  </tr>
+               </c:forEach>
                </tbody>
             </table>
          </section>

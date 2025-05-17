@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.nsbm.dea.student_management_system.model.subject.Attendance;
+import org.nsbm.dea.student_management_system.model.subject.Marks;
 import org.nsbm.dea.student_management_system.model.subject.SubjectDetails;
 import org.nsbm.dea.student_management_system.state.DB;
 import org.nsbm.dea.student_management_system.state.Redis;
@@ -114,6 +115,23 @@ public class SubjectDAO {
     return false;
   }
 
+  public static int getTotalStudents(int subject_id) throws SQLException {
+    String query = "SELECT COUNT(DISTINCT student_id) AS count FROM _student_subject WHERE subject_id = ?";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setInt(1, subject_id);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            return resultSet.getInt("count");
+          }
+        }
+      }
+    }
+
+    return 0;
+  }
+
   public static List<SubjectDetails> getNamesAndSlugs() throws SQLException {
     final String REDIS_KEY = "nsbm:subject_names_and_slugs";
     final String QUERY = "SELECT id, name, slug FROM _subject";
@@ -201,15 +219,53 @@ public class SubjectDAO {
     return attendanceList;
   }
 
-  public static Optional<String> getSubjectBySlug(String slug) throws SQLException {
-    String query = "SELECT name FROM _subject WHERE slug = ?";
+  public static List<Marks> getExaminationResultsForSubject(String slug) throws SQLException {
+    String query = "SELECT s.id AS student_id, s.name AS student_name, e.name AS examination_name, m.marks AS examination_marks FROM _student s JOIN _student_subject ss ON s.id = ss.student_id JOIN _subject sub ON ss.subject_id = sub.id JOIN _examinations e ON sub.id = e.subject_id JOIN _marks m ON e.id = m.examination_id AND s.id = m.student_id WHERE sub.slug = ?";
+
+    List<Marks> marksList = new ArrayList<>();
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setString(1, slug);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          while (resultSet.next()) {
+            Marks marks = new Marks(resultSet.getInt("student_id"), resultSet.getString("student_name"),
+                resultSet.getString("examination_name"), resultSet.getFloat("examination_marks"));
+            marksList.add(marks);
+          }
+        }
+      }
+    }
+
+    return marksList;
+  }
+
+  public static Optional<SubjectDetails> getSubjectBySlug(String slug) throws SQLException {
+    String query = "SELECT id, name FROM _subject WHERE slug = ?";
 
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement(query)) {
         statement.setString(1, slug);
         try (ResultSet resultSet = statement.executeQuery()) {
           if (resultSet.next()) {
-            return Optional.of(resultSet.getString("name"));
+            return Optional.of(new SubjectDetails(resultSet.getInt("id"), resultSet.getString("name"), slug));
+          }
+        }
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  public static Optional<Float> getAverageAttendancePerSubject(String slug) throws SQLException {
+    String query = "SELECT ((COUNT(DISTINCT ss.student_id)::FLOAT / NULLIF(sub.total_sessions, 0)) * 100) AS aaps FROM _subject sub LEFT JOIN _student_subject ss ON sub.id = ss.subject_id WHERE sub.slug = ? GROUP BY sub.id, sub.slug, sub.total_sessions;";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setString(1, slug);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            return Optional.of(resultSet.getFloat("aaps"));
           }
         }
       }

@@ -1,6 +1,6 @@
 <%@ page import="org.nsbm.dea.student_management_system.model.subject.Attendance" %>
 <jsp:useBean id="attendanceList" scope="request" type="java.util.List<org.nsbm.dea.student_management_system.model.subject.Attendance>"/>
-<jsp:useBean id="subject" scope="request" type="java.lang.String"/>
+<jsp:useBean id="subject" scope="request" type="org.nsbm.dea.student_management_system.model.subject.SubjectDetails"/>
 <%
    int students = attendanceList.size();
    float attendancePercentageSum = 0;
@@ -24,7 +24,7 @@
       <%@include file="components/sidebar.jsp"%>
       <main class="main-content">
          <header class="topbar">
-            <h1>${subject} Attendance</h1>
+            <h1>${subject.name} Attendance</h1>
          </header>
          <section class="cards-container">
             <div class="card">
