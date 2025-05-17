@@ -31,7 +31,7 @@ public class Guard implements Filter {
     Optional<String> sessionToken = Optional.empty();
 
     Cookie[] cookies = req.getCookies();
-    if (cookies.length > 0) {
+    if (cookies != null && cookies.length > 0) {
       for (Cookie cookie : cookies) {
         if (cookie.getName().equals("dea_session")) {
           sessionToken = Optional.of(cookie.getValue());
@@ -53,7 +53,7 @@ public class Guard implements Filter {
       }
     }
 
-    res.sendRedirect(req.getContextPath() + "/login");
+    res.sendRedirect(req.getContextPath() + "/");
     return;
   }
 }
