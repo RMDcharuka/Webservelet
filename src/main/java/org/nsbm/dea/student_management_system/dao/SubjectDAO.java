@@ -67,6 +67,20 @@ public class SubjectDAO {
     }
   }
 
+  public static void createExamination(int user_id, int subject_id, String name, long date) throws SQLException {
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection
+          .prepareStatement("INSERT INTO _examinations (created_by, subject_id, name, date) VALUES (?, ?, ?, ?)")) {
+        statement.setInt(1, user_id);
+        statement.setInt(2, subject_id);
+        statement.setString(3, name);
+        statement.setLong(4, date);
+
+        statement.executeUpdate();
+      }
+    }
+  }
+
   public static List<SubjectDetails> getNamesAndSlugs() throws SQLException {
     final String REDIS_KEY = "nsbm:subject_names_and_slugs";
     final String QUERY = "SELECT id, name, slug FROM _subject";
