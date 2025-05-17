@@ -81,6 +81,39 @@ public class SubjectDAO {
     }
   }
 
+  public static void recordExaminationMarks(int user_id, int examination_id, int student_id, float marks)
+      throws SQLException {
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection
+          .prepareStatement("INSERT INTO _marks (entered_by, examination_id, student_id, marks) VALUES (?, ?, ?, ?)")) {
+        statement.setInt(1, user_id);
+        statement.setInt(2, examination_id);
+        statement.setInt(3, student_id);
+        statement.setFloat(4, marks);
+
+        statement.executeUpdate();
+      }
+    }
+  }
+
+  public static boolean getEnrollmentStatus(int student_id, int subject_id) throws SQLException {
+    String query = "SELECT * FROM _student_subject WHERE student_id = ? AND subject_id = ? LIMIT 1";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setInt(1, student_id);
+        statement.setInt(2, subject_id);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   public static List<SubjectDetails> getNamesAndSlugs() throws SQLException {
     final String REDIS_KEY = "nsbm:subject_names_and_slugs";
     final String QUERY = "SELECT id, name, slug FROM _subject";
