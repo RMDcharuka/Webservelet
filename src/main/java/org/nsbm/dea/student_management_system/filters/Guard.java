@@ -18,7 +18,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebFilter(urlPatterns = { "/dashboard/*", "/record/*" })
+@WebFilter(urlPatterns = { "/dashboard/*", "/record/*", "/attendance/*" })
 public class Guard implements Filter {
   private static final Logger logger = Logger.getLogger(Auth.class.getName());
 

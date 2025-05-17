@@ -7,11 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.nsbm.dea.student_management_system.model.subject.Attendance;
 import org.nsbm.dea.student_management_system.model.subject.SubjectDetails;
 import org.nsbm.dea.student_management_system.state.DB;
 import org.nsbm.dea.student_management_system.state.Redis;
@@ -129,5 +131,43 @@ public class SubjectDAO {
     }
 
     return subjects;
+  }
+
+  public static List<Attendance> getAttendanceForSubject(String slug) throws SQLException {
+    String query = "SELECT s.id AS student_id, s.name AS student_name, COUNT(DISTINCT DATE(a.arrived_at)) AS total_present_sessions, sub.total_sessions AS total_sessions FROM _student s JOIN _attendance a ON s.id = a.student_id JOIN _subject sub ON a.subject_id = sub.id WHERE sub.slug = ? GROUP BY s.id, s.name, sub.total_sessions";
+
+    List<Attendance> attendanceList = new ArrayList<>();
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setString(1, slug);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          while (resultSet.next()) {
+            Attendance attendance = new Attendance(resultSet.getInt("student_id"), resultSet.getString("student_name"),
+                resultSet.getInt("total_sessions"), resultSet.getInt("total_present_sessions"));
+            attendanceList.add(attendance);
+          }
+        }
+      }
+    }
+
+    return attendanceList;
+  }
+
+  public static Optional<String> getSubjectBySlug(String slug) throws SQLException {
+    String query = "SELECT name FROM _subject WHERE slug = ?";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setString(1, slug);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            return Optional.of(resultSet.getString("name"));
+          }
+        }
+      }
+    }
+
+    return Optional.empty();
   }
 }

@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/attendance/*")
-public class Attendance extends HttpServlet {
+@WebServlet("/record/*")
+public class RecordPage extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String pathInfo = request.getPathInfo();
@@ -26,6 +26,6 @@ public class Attendance extends HttpServlet {
     }
 
     request.setAttribute("faculty", facultyName.get());
-    request.getRequestDispatcher("/WEB-INF/attendance.jsp").forward(request, response);
+    request.getRequestDispatcher("/WEB-INF/record.jsp").forward(request, response);
   }
 }
