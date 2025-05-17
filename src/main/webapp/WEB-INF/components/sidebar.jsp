@@ -1,8 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="org.nsbm.dea.student_management_system.lib.Faculty" %>
+<%@ page import="org.nsbm.dea.student_management_system.model.subject.SubjectDetails" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.nsbm.dea.student_management_system.dao.SubjectDAO" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="java.util.ArrayList" %>
 <%
-  String[][] faculties = Faculty.FACULTIES;
-  request.setAttribute("faculties", faculties);
+    List<SubjectDetails> subjects = new ArrayList<>();
+    try {
+        subjects = SubjectDAO.getNamesAndSlugs();
+        request.setAttribute("subjects", subjects);
+    } catch (SQLException e) {
+        throw new ServletException();
+    }
 %>
 
 <nav class="sidebar">
@@ -29,8 +39,8 @@
             <i class="fas fa-chevron-down dropdown-arrow"></i>
           </label>
           <ul class="dropdown-content">
-            <c:forEach var="faculty" items="${faculties}">
-              <li><a href="${pageContext.request.contextPath}/record/${faculty[0]}">${faculty[1]}</a></li>
+            <c:forEach var="subject" items="${subjects}">
+              <li><a href="${pageContext.request.contextPath}/record/${subject.slug}">${subject.name}</a></li>
             </c:forEach>
           </ul>
         </li>
@@ -42,8 +52,8 @@
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </label>
             <ul class="dropdown-content">
-              <c:forEach var="faculty" items="${faculties}">
-                <li><a href="${pageContext.request.contextPath}/attendance/${faculty[0]}">${faculty[1]}</a></li>
+              <c:forEach var="subject" items="${subjects}">
+                <li><a href="${pageContext.request.contextPath}/attendance/${subject.slug}">${subject.name}</a></li>
               </c:forEach>
             </ul>
         </li>

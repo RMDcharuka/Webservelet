@@ -1,12 +1,30 @@
 package org.nsbm.dea.student_management_system.dao;
 
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.nsbm.dea.student_management_system.model.subject.SubjectDetails;
 import org.nsbm.dea.student_management_system.state.DB;
+import org.nsbm.dea.student_management_system.state.Redis;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 public class SubjectDAO {
+  public static final Gson gson = new Gson();
+
   public static void create(int user_id, String name, String slug, int total_sessions) throws SQLException {
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
@@ -32,5 +50,71 @@ public class SubjectDAO {
         statement.executeUpdate();
       }
     }
+  }
+
+  public static List<SubjectDetails> getNamesAndSlugs() throws SQLException {
+    final String REDIS_KEY = "nsbm:subject_names_and_slugs";
+    final String QUERY = "SELECT id, name, slug FROM _subject";
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    List<SubjectDetails> subjects = new ArrayList<>();
+
+    JedisPool pool = Redis.getPool();
+
+    try {
+      Callable<List<SubjectDetails>> redisTask = () -> {
+        try (Jedis jedis = pool.getResource()) {
+          String value = jedis.get(REDIS_KEY);
+          if (value != null && !value.isEmpty()) {
+            Type subjectListType = new TypeToken<List<SubjectDetails>>() {
+            }.getType();
+            return gson.fromJson(value, subjectListType);
+          }
+          return null;
+        }
+      };
+
+      Callable<List<SubjectDetails>> dbTask = () -> {
+        List<SubjectDetails> dbSubjects = new ArrayList<>();
+        try (
+            Connection connection = DB.getConnection();
+            PreparedStatement statement = connection.prepareStatement(QUERY);
+            ResultSet resultSet = statement.executeQuery()) {
+          while (resultSet.next()) {
+            SubjectDetails subject = new SubjectDetails(resultSet.getInt("id"), resultSet.getString("name"),
+                resultSet.getString("slug"));
+            dbSubjects.add(subject);
+          }
+        }
+
+        return dbSubjects;
+      };
+
+      Future<List<SubjectDetails>> redisFuture = executor.submit(redisTask);
+      Future<List<SubjectDetails>> dbFuture = executor.submit(dbTask);
+
+      try {
+        List<SubjectDetails> redisResult = redisFuture.get();
+        if (redisResult != null) {
+          subjects = redisResult;
+        } else {
+          List<SubjectDetails> dbResult = dbFuture.get();
+          executor.submit(() -> {
+            try (Jedis jedis = pool.getResource()) {
+              jedis.setex(REDIS_KEY, 5 * 60, gson.toJson(dbResult));
+            }
+          });
+          subjects = dbResult;
+        }
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+
+    } finally {
+      executor.shutdown();
+      pool.close();
+    }
+
+    return subjects;
   }
 }
