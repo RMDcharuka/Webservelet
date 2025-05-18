@@ -33,7 +33,7 @@ public class PrimaryClaims implements Claims {
     this.jti = jti.orElse(ULID.random().toString());
     this.rjti = rjti.orElse(this.jti);
     this.iat = Date.from(now).getTime() / 1000;
-    this.nbf = Date.from(now.plusSeconds(5)).getTime() / 1000;
+    this.nbf = Date.from(now).getTime() / 1000;
     this.exp = Date.from(now.plusSeconds(exp)).getTime() / 1000;
     this.custom = custom;
   }

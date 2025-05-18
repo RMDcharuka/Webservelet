@@ -54,6 +54,7 @@
               <c:forEach var="subject" items="${subjects}">
                 <li><a href="${pageContext.request.contextPath}/attendance/${subject.slug}">${subject.name}</a></li>
               </c:forEach>
+                <li><a href="${pageContext.request.contextPath}/attendance/record">Record Attendance</a></li>
             </ul>
         </li>
 

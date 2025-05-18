@@ -27,6 +27,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>record-attendance</servlet-name>
+    <jsp-file>/WEB-INF/record-attendance.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>record-attendance</servlet-name>
+    <url-pattern>/attendance/record</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>signup</servlet-name>
     <jsp-file>/WEB-INF/signup.jsp</jsp-file>
   </servlet>

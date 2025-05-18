@@ -30,8 +30,9 @@ public class Auth implements Filter {
     HttpServletResponse res = (HttpServletResponse) response;
 
     String authorization = req.getHeader("Authorization");
+    System.out.println("Authorization: " + authorization);
     if (authorization == null || !authorization.startsWith("Bearer ")) {
-      AppError.response(res, AppError.unauthorized("You are not authorized to perform this operation", null));
+      AppError.response(res, AppError.unauthorized("You are not authorized to perform this operation zeorth bro", null));
       return;
     }
     String token = authorization.substring(7);
@@ -68,6 +69,7 @@ public class Auth implements Filter {
     }
 
     req.setAttribute("userDetails", userDetails);
+    System.out.println("wooow , we are here");
     chain.doFilter(request, response);
   }
 }
