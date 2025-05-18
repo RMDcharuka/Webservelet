@@ -45,7 +45,7 @@ import jakarta.validation.ValidatorFactory;
 @WebServlet("/api/auth/login")
 public class Login extends HttpServlet {
   private static final ExecutorService executor = Executors.newFixedThreadPool(5);
-  private static final Logger logger = Logger.getLogger(AppError.class.getName());
+  private static final Logger logger = Logger.getLogger(Login.class.getName());
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -130,6 +130,16 @@ public class Login extends HttpServlet {
         }
       });
 
+      boolean redirect = false;
+      String redirectParam = request.getParameter("redirect");
+      if (redirectParam != null) {
+        redirect = true;
+      }
+      if (redirect) {
+        System.out.println("redirect to login");
+        response.sendRedirect(request.getContextPath() + "/dashboard");
+        return;
+      }
       new Response("success", null).toJson(response, HttpServletResponse.SC_OK);
     } catch (SQLException e) {
       AppError.response(response, AppError.fromDbError(e));

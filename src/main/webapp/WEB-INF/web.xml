@@ -3,8 +3,11 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
   version="6.0">
-
   <display-name>Student_Management_System</display-name>
+  <welcome-file-list>
+    <welcome-file>index</welcome-file>
+  </welcome-file-list>
+
   <servlet>
     <servlet-name>index</servlet-name>
     <jsp-file>/index.jsp</jsp-file>
@@ -13,16 +16,6 @@
     <servlet-name>index</servlet-name>
     <url-pattern>/index</url-pattern>
   </servlet-mapping>
-
-  <servlet>
-    <servlet-name>attendance</servlet-name>
-    <jsp-file>/WEB-INF/attendance.jsp</jsp-file>
-  </servlet>
-
-  <servlet>
-    <servlet-name>record</servlet-name>
-    <jsp-file>/WEB-INF/record.jsp</jsp-file>
-  </servlet>
 
   <servlet>
     <servlet-name>dashboard</servlet-name>

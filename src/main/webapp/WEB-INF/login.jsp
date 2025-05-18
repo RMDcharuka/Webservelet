@@ -302,7 +302,7 @@
             setLoadingState(true);
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('/api/auth/login?redirect=true', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -311,8 +311,7 @@
                 });
 
                 if (response.status === 200) {
-                    form.reset();
-                    window.location.href = "/dashboard";
+                    location.href = "/dashboard"
                 } else {
                     const result = await response.json();
                     showError('apiError', result.message || 'Login failed. Please try again.');

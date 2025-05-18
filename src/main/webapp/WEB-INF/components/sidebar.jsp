@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="org.nsbm.dea.student_management_system.lib.Faculty" %>
 <%@ page import="org.nsbm.dea.student_management_system.model.subject.SubjectDetails" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.nsbm.dea.student_management_system.dao.SubjectDAO" %>
@@ -18,7 +17,7 @@
 <nav class="sidebar">
     <h2>Student Manager</h2>
     <ul>
-      <li><a href="${pageContext.request.contextPath}/"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="${pageContext.request.contextPath}/dashboard"><i class="fas fa-home"></i> Home</a></li>
 
         <li class="dropdown">
             <input type="checkbox" id="students-toggle">
