@@ -12,9 +12,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.nsbm.dea.student_management_system.model.subject.Attendance;
 import org.nsbm.dea.student_management_system.model.subject.Marks;
+import org.nsbm.dea.student_management_system.model.subject.Exam;
 import org.nsbm.dea.student_management_system.model.subject.SubjectDetails;
 import org.nsbm.dea.student_management_system.state.DB;
 import org.nsbm.dea.student_management_system.state.Redis;
@@ -29,6 +32,11 @@ public class SubjectDAO {
   public static final Gson gson = new Gson();
 
   public static void create(int user_id, String name, String slug, int total_sessions) throws SQLException {
+    final String REDIS_KEY = "nsbm:total_subjects";
+    final Logger logger = Logger.getLogger(SubjectDAO.class.getName());
+    JedisPool pool = Redis.getPool();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
           .prepareStatement("INSERT INTO _subject (added_by, name, slug, total_sessions) VALUES (?, ?, ?, ?)")) {
@@ -39,6 +47,32 @@ public class SubjectDAO {
 
         statement.executeUpdate();
       }
+
+      executor.submit(() -> {
+        try (Jedis jedis = pool.getResource()) {
+          Long newCount = jedis.incr(REDIS_KEY);
+          if (newCount == 1) {
+            try (
+                Connection connection2 = DB.getConnection();
+                PreparedStatement statement2 = connection2.prepareStatement("SELECT COUNT(*) AS count FROM _subject");
+                ResultSet resultSet = statement2.executeQuery()) {
+              if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                jedis.setex(REDIS_KEY, 2 * 24 * 60 * 60, String.format("%d", count));
+              }
+            } catch (SQLException e) {
+              logger.log(Level.SEVERE, e.getMessage());
+            }
+          } else {
+            jedis.expire(REDIS_KEY, 2 * 24 * 60 * 60);
+          }
+        } catch (Exception e) {
+          logger.log(Level.SEVERE, e.getMessage());
+        }
+      });
+    } finally {
+      executor.shutdown();
+      pool.close();
     }
   }
 
@@ -56,6 +90,11 @@ public class SubjectDAO {
   }
 
   public static void recordAttendance(int user_id, int student_id, int subject_id) throws SQLException {
+    final String REDIS_KEY = "nsbm:average_attendance_across_all_subjects";
+    final Logger logger = Logger.getLogger(SubjectDAO.class.getName());
+    JedisPool pool = Redis.getPool();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
           .prepareStatement("INSERT INTO _attendance (recorded_by, student_id, subject_id) VALUES (?, ?, ?)")) {
@@ -65,10 +104,26 @@ public class SubjectDAO {
 
         statement.executeUpdate();
       }
+
+      executor.submit(() -> {
+        try (Jedis jedis = pool.getResource()) {
+          jedis.del(REDIS_KEY);
+        } catch (Exception e) {
+          logger.log(Level.SEVERE, e.getMessage());
+        }
+      });
+    } finally {
+      executor.shutdown();
+      pool.close();
     }
   }
 
   public static void createExamination(int user_id, int subject_id, String name, long date) throws SQLException {
+    final String REDIS_KEY = "nsbm:total_examinations";
+    final Logger logger = Logger.getLogger(SubjectDAO.class.getName());
+    JedisPool pool = Redis.getPool();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
           .prepareStatement("INSERT INTO _examinations (created_by, subject_id, name, date) VALUES (?, ?, ?, ?)")) {
@@ -79,11 +134,43 @@ public class SubjectDAO {
 
         statement.executeUpdate();
       }
+
+      executor.submit(() -> {
+        try (Jedis jedis = pool.getResource()) {
+          Long newCount = jedis.incr(REDIS_KEY);
+          if (newCount == 1) {
+            try (
+                Connection connection2 = DB.getConnection();
+                PreparedStatement statement2 = connection2
+                    .prepareStatement("SELECT COUNT(*) AS count FROM _examinations");
+                ResultSet resultSet = statement2.executeQuery()) {
+              if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                jedis.setex(REDIS_KEY, 2 * 24 * 60 * 60, String.format("%d", count));
+              }
+            } catch (SQLException e) {
+              logger.log(Level.SEVERE, e.getMessage());
+            }
+          } else {
+            jedis.expire(REDIS_KEY, 2 * 24 * 60 * 60);
+          }
+        } catch (Exception e) {
+          logger.log(Level.SEVERE, e.getMessage());
+        }
+      });
+    } finally {
+      executor.shutdown();
+      pool.close();
     }
   }
 
   public static void recordExaminationMarks(int user_id, int examination_id, int student_id, float marks)
       throws SQLException {
+    final String REDIS_KEY = "nsbm:top_performers";
+    final Logger logger = Logger.getLogger(SubjectDAO.class.getName());
+    JedisPool pool = Redis.getPool();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
     try (Connection connection = DB.getConnection()) {
       try (PreparedStatement statement = connection
           .prepareStatement("INSERT INTO _marks (entered_by, examination_id, student_id, marks) VALUES (?, ?, ?, ?)")) {
@@ -94,7 +181,39 @@ public class SubjectDAO {
 
         statement.executeUpdate();
       }
+
+      executor.submit(() -> {
+        try (Jedis jedis = pool.getResource()) {
+          jedis.del(REDIS_KEY);
+        } catch (Exception e) {
+          logger.log(Level.SEVERE, e.getMessage());
+        }
+      });
+    } finally {
+      executor.shutdown();
+      pool.close();
     }
+  }
+
+  public static List<Exam> getUpcommingExaminations() throws SQLException {
+    List<Exam> exams = new ArrayList<>();
+    String query = "SELECT e.id AS examination_id, e.name AS examination_name, s.id AS subject_id, s.name AS subject_name, e.date AS examination_date FROM _examinations e JOIN _subject s ON e.subject_id = s.id WHERE e.date > ? ORDER BY e.date";
+
+    try (Connection connection = DB.getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setLong(1, System.currentTimeMillis() / 1000);
+        try (ResultSet resultSet = statement.executeQuery()) {
+          while (resultSet.next()) {
+            Exam exam = new Exam(resultSet.getInt("examination_id"), resultSet.getString("examination_name"),
+                resultSet.getInt("subject_id"), resultSet.getString("subject_name"),
+                resultSet.getLong("examination_date"));
+            exams.add(exam);
+          }
+        }
+      }
+    }
+
+    return exams;
   }
 
   public static boolean getEnrollmentStatus(int student_id, int subject_id) throws SQLException {
@@ -130,6 +249,217 @@ public class SubjectDAO {
     }
 
     return 0;
+  }
+
+  public static int getTotalSubjects() throws SQLException {
+    final String REDIS_KEY = "nsbm:total_subjects";
+    final String QUERY = "SELECT COUNT(*) AS count FROM _subject";
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    Integer subjects = 0;
+
+    JedisPool pool = Redis.getPool();
+
+    try {
+      Callable<Integer> redisTask = () -> {
+        try (Jedis jedis = pool.getResource()) {
+          String value = jedis.get(REDIS_KEY);
+          if (value != null && !value.isEmpty()) {
+            try {
+              return Integer.parseInt(value);
+            } catch (Exception e) {
+              return null;
+            }
+          }
+          return null;
+        }
+      };
+
+      Callable<Integer> dbTask = () -> {
+        try (
+            Connection connection = DB.getConnection();
+            PreparedStatement statement = connection.prepareStatement(QUERY);
+            ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            try {
+              return resultSet.getInt("count");
+            } catch (Exception e) {
+              return 0;
+            }
+          }
+        }
+        return 0;
+      };
+
+      Future<Integer> redisFuture = executor.submit(redisTask);
+      Future<Integer> dbFuture = executor.submit(dbTask);
+
+      try {
+        Integer redisResult = redisFuture.get();
+        if (redisResult != null) {
+          subjects = redisResult;
+        } else {
+          Integer dbResult = dbFuture.get();
+          executor.submit(() -> {
+            try (Jedis jedis = pool.getResource()) {
+              jedis.setex(REDIS_KEY, 2 * 24 * 60 * 60, String.format("%d", dbResult));
+            }
+          });
+          subjects = dbResult;
+        }
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+
+    } finally {
+      executor.shutdown();
+      pool.close();
+    }
+
+    return subjects;
+  }
+
+  public static Double getAverageAttendanceAcrossAllSubjects() throws SQLException {
+    final String REDIS_KEY = "nsbm:average_attendance_across_all_subjects";
+    final String QUERY = "SELECT (SELECT SUM(total_sessions) FROM _subject) AS total_sessions, (SELECT COUNT(*) FROM _attendance) AS total_attendance";
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    Double averageAttendance = 0.0;
+
+    JedisPool pool = Redis.getPool();
+
+    try {
+      Callable<Double> redisTask = () -> {
+        try (Jedis jedis = pool.getResource()) {
+          String value = jedis.get(REDIS_KEY);
+          if (value != null && !value.isEmpty()) {
+            try {
+              return Double.parseDouble(value);
+            } catch (Exception e) {
+              return null;
+            }
+          }
+          return null;
+        }
+      };
+
+      Callable<Double> dbTask = () -> {
+        try (
+            Connection connection = DB.getConnection();
+            PreparedStatement statement = connection.prepareStatement(QUERY);
+            ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            try {
+              double totalSessions = resultSet.getDouble("total_sessions");
+              double totalAttendance = resultSet.getDouble("total_attendance");
+
+              if (totalSessions > 0) {
+                return (totalAttendance / totalSessions) * 100;
+              } else {
+                return 0.0;
+              }
+            } catch (Exception e) {
+              return 0.0;
+            }
+          }
+        }
+        return 0.0;
+      };
+
+      Future<Double> redisFuture = executor.submit(redisTask);
+      Future<Double> dbFuture = executor.submit(dbTask);
+
+      try {
+        Double redisResult = redisFuture.get();
+        if (redisResult != null) {
+          averageAttendance = redisResult;
+        } else {
+          Double dbResult = dbFuture.get();
+          executor.submit(() -> {
+            try (Jedis jedis = pool.getResource()) {
+              jedis.setex(REDIS_KEY, 2 * 24 * 60 * 60, String.format("%f", dbResult));
+            }
+          });
+          averageAttendance = dbResult;
+        }
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+
+    } finally {
+      executor.shutdown();
+      pool.close();
+    }
+
+    return averageAttendance;
+  }
+
+  public static int getTotalExaminations() throws SQLException {
+    final String REDIS_KEY = "nsbm:total_examinations";
+    final String QUERY = "SELECT COUNT(*) AS count FROM _examinations";
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    Integer examinations = 0;
+
+    JedisPool pool = Redis.getPool();
+
+    try {
+      Callable<Integer> redisTask = () -> {
+        try (Jedis jedis = pool.getResource()) {
+          String value = jedis.get(REDIS_KEY);
+          if (value != null && !value.isEmpty()) {
+            try {
+              return Integer.parseInt(value);
+            } catch (Exception e) {
+              return null;
+            }
+          }
+          return null;
+        }
+      };
+
+      Callable<Integer> dbTask = () -> {
+        try (
+            Connection connection = DB.getConnection();
+            PreparedStatement statement = connection.prepareStatement(QUERY);
+            ResultSet resultSet = statement.executeQuery()) {
+          if (resultSet.next()) {
+            try {
+              return resultSet.getInt("count");
+            } catch (Exception e) {
+              return 0;
+            }
+          }
+        }
+        return 0;
+      };
+
+      Future<Integer> redisFuture = executor.submit(redisTask);
+      Future<Integer> dbFuture = executor.submit(dbTask);
+
+      try {
+        Integer redisResult = redisFuture.get();
+        if (redisResult != null) {
+          examinations = redisResult;
+        } else {
+          Integer dbResult = dbFuture.get();
+          executor.submit(() -> {
+            try (Jedis jedis = pool.getResource()) {
+              jedis.setex(REDIS_KEY, 2 * 24 * 60 * 60, String.format("%d", dbResult));
+            }
+          });
+          examinations = dbResult;
+        }
+      } catch (Exception e) {
+        throw new SQLException(e.getMessage());
+      }
+
+    } finally {
+      executor.shutdown();
+      pool.close();
+    }
+
+    return examinations;
   }
 
   public static List<SubjectDetails> getNamesAndSlugs() throws SQLException {
